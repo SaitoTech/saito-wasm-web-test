@@ -7,6 +7,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 import Saito from './saito';
+// const Saito = require("./saito").default;
 
 var appNode = express();
 
@@ -21,10 +22,10 @@ appNode.use('/users', usersRouter);
 
 console.log("testing 123");
 
-// let saito = new Saito();
-//
-// saito.initialize().then(()=>{
-//     console.log("xxxx");
-// });
+let saito = new Saito();
+
+saito.initialize().then(()=>{
+    console.log("xxxx");
+});
 
 module.exports = appNode;

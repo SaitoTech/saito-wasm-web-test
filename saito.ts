@@ -13,9 +13,11 @@ export default class Saito {
             Saito.instance = await import("saito-wasm/dist/browser");
         }
         console.log("saito1 : ", Saito.instance);
-        await Saito.instance.initialize();
+        console.log("saito d : ", Saito.instance.default);
+        let saito = await Saito.instance.default;
+        console.log("saito2 : ", saito);
+        await saito.initialize();
         console.log("saito initialized");
     }
-
 }
 

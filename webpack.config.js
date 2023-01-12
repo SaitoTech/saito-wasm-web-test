@@ -1,7 +1,7 @@
 const path = require("path");
 const webpack = require("webpack");
 const {merge} = require("webpack-merge");
-// const CircularDependencyPlugin = require('circular-dependency-plugin');
+const CopyPlugin = require("copy-webpack-plugin");
 
 // const __dirname = path.resolve();
 let devtool = undefined;
@@ -163,19 +163,6 @@ let config = {
         new webpack.ProvidePlugin({
             process: "process/browser"
         })
-        // new CircularDependencyPlugin({
-        //     // exclude detection of files based on a RegExp
-        //     exclude: /a\.js|node_modules/,
-        //     // include specific files based on a RegExp
-        //     include: /lib/,
-        //     // add errors to webpack instead of warnings
-        //     failOnError: false,
-        //     // allow import cycles that include an asyncronous import,
-        //     // e.g. via import(/* webpackMode: "weak" */ './file.js')
-        //     allowAsyncCycles: false,
-        //     // set the current working directory for displaying module paths
-        //     cwd: process.cwd(),
-        // })
     ],
     experiments: {
         asyncWebAssembly: true,
@@ -205,7 +192,7 @@ let webConfigs = merge(config, {
         new CopyPlugin({
             patterns: [{
                 from: "./dist/browser/saito.js",
-                to: "../public/javascripts/saito.js",
+                to: "../../public/javascripts/saito.js",
             }]
         })
     ],
