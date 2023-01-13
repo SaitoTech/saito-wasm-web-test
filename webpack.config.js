@@ -63,7 +63,7 @@ let config = {
     resolve: {
         // Add '.ts' and '.tsx' as resolvable extensions.
         //extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
-        extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
+        extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js", ".wasm", "..."],
         fallback: {
             "fs": false,
             "tls": false,
@@ -78,7 +78,8 @@ let config = {
             "crypto-browserify": require.resolve("crypto-browserify"),
             "async_hooks": false,
             'process/browser': require.resolve('process/browser'),
-            "util": require.resolve("util/")
+            "util": require.resolve("util/"),
+            "url": require.resolve("url/")
         }
     },
     module: {
@@ -152,7 +153,12 @@ let config = {
                     path.resolve(__dirname, "../mods/appstore/mods")
                 ]
             }
-        ]
+        ],
+        parser: {
+            javascript: {
+                dynamicImportMode: 'eager'
+            }
+        }
     },
     plugins: [
         // Work around for Buffer is undefined:
@@ -166,12 +172,12 @@ let config = {
     ],
     experiments: {
         asyncWebAssembly: true,
-        topLevelAwait:true,
+        topLevelAwait: true,
         syncWebAssembly: true,
-        futureDefaults:true,
+        // futureDefaults: true,
     },
     mode: "development",
-    devtool: devtool
+    devtool: "eval"
 
 };
 
@@ -189,12 +195,12 @@ let webConfigs = merge(config, {
         filename: outputfile
     },
     plugins: [
-        new CopyPlugin({
-            patterns: [{
-                from: "./dist/browser/saito.js",
-                to: "../../public/javascripts/saito.js",
-            }]
-        })
+        // new CopyPlugin({
+        //     patterns: [{
+        //         from: "./dist/browser/saito.js",
+        //         to: "../../public/javascripts/saito.js",
+        //     }]
+        // })
     ],
     target: "web",
     entry: ["babel-polyfill", path.resolve(__dirname, "./app.web.ts")],

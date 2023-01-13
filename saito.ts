@@ -8,16 +8,22 @@ export default class Saito {
     async initialize() {
         console.log("initializing saito")
         if (typeof window === "undefined") {
-            Saito.instance = require("saito-wasm/dist/server");
+            // @ts-ignore
+            // global.fetch = (await import("node-fetch")).default;
+            let instance = await import("saito-wasm/dist/server");
+            console.log("111 ", instance);
+            console.log("aaaa : ", typeof instance.default);
+            let inst2 = await instance.default;
+            console.log("222", inst2);
+            // await inst2.initSync("aaa");
+            Saito.instance = inst2;
         } else {
-            Saito.instance = await import("saito-wasm/dist/browser");
+            let instance = await import("saito-wasm/dist/browser");
+            let inst2 = await instance.default;
+            Saito.instance = inst2;
         }
-        console.log("saito1 : ", Saito.instance);
-        console.log("saito d : ", Saito.instance.default);
-        let saito = await Saito.instance.default;
-        console.log("saito2 : ", saito);
-        console.log("init : ", saito.initialize);
-        await saito.initialize;
+
+        await Saito.instance.initialize();
         console.log("saito initialized");
     }
 }
