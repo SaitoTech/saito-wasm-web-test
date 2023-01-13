@@ -1,5 +1,3 @@
-import {webcrypto} from 'node:crypto'
-
 export default class Saito {
     static instance: any;
 
@@ -10,10 +8,11 @@ export default class Saito {
     async initialize() {
         console.log("initializing saito")
         if (typeof window === "undefined") {
+
+            let cr = await import ('node:crypto');
             // @ts-ignore
-            globalThis.crypto = webcrypto
-            // @ts-ignore
-            // global.fetch = (await import("node-fetch")).default;
+            globalThis.crypto = cr.webcrypto;
+            
             let instance = await import("saito-wasm/dist/server");
             let inst2 = await instance.default;
             console.log("saito : ", inst2);
