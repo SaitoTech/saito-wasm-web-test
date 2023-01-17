@@ -13,19 +13,17 @@ var appNode = express();
 
 appNode.use(logger('dev'));
 appNode.use(express.json());
-appNode.use(express.urlencoded({ extended: false }));
+appNode.use(express.urlencoded({extended: false}));
 appNode.use(cookieParser());
 appNode.use(express.static(path.join(__dirname, 'public')));
 
 appNode.use('/', indexRouter);
 appNode.use('/users', usersRouter);
 
-console.log("testing 123");
 
 let saito = new Saito();
 
-saito.initialize().then(()=>{
-    console.log("xxxx");
+saito.initialize().then(() => {
 });
 
 module.exports = appNode;
