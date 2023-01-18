@@ -15,7 +15,7 @@ export default class Saito {
 
             let instance = await import("saito-wasm/dist/server");
             let inst2 = await instance.default;
-            console.log("saito : ", inst2);
+            // console.log("saito : ", inst2);
             // await inst2.initSync("aaa");
             Saito.instance = inst2;
         } else {
@@ -42,7 +42,7 @@ export default class Saito {
             "peers": [
                 {
                     "host": "127.0.0.1",
-                    "port": 12101,
+                    "port": 12201,
                     "protocol": "http",
                     "synctype": "full"
                 }
@@ -50,6 +50,10 @@ export default class Saito {
         };
         await Saito.instance.initialize(configs);
         console.log("saito initialized");
+
+        setInterval(() => {
+            Saito.instance.process_timer_event(BigInt(100));
+        }, 100);
     }
 }
 
