@@ -1,5 +1,7 @@
 export default class Saito {
     static instance: any;
+    sockets: Map<bigint, any> = new Map<bigint, any>();
+    nextIndex: bigint = BigInt(0);
 
     constructor() {
         console.log("construct...");
@@ -55,5 +57,20 @@ export default class Saito {
             Saito.instance.process_timer_event(BigInt(100));
         }, 100);
     }
+
+    public addNewSocket(socket: any): bigint {
+        this.nextIndex++;
+        this.sockets.set(this.nextIndex, socket);
+        return this.nextIndex;
+    }
+
+    public getSocket(index: bigint): any | null {
+        return this.sockets.get(index);
+    }
+
+    public removeSocket(index: bigint) {
+        this.sockets.delete(index);
+    }
+
 }
 
