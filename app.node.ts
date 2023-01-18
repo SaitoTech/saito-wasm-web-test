@@ -41,7 +41,7 @@ function startServer() {
     });
     server.on("connection", (wsocket: any, request: any) => {
         let index = saito.addNewSocket(wsocket);
-        Saito.instance.process_new_peer(index, null);
+        saito.getInstance().process_new_peer(index, null);
     });
 }
 
@@ -59,8 +59,22 @@ global.shared_methods = {
             socket.send(buffer);
         });
     },
-    connect_to_peer: (url: string) => {
-        let socket = ws.WebSocket(url);
+    connect_to_peer: (peer_data: any) => {
+        let protocol = "ws";
+        if (peer_data.protocol === "https") {
+            protocol = "wss";
+        }
+        let url = protocol + "://" + peer_data.host + ":" + peer_data.port + "/wsopen";
+
+        try {
+            console.log("connecting to " + url + "....");
+            let socket = new ws.WebSocket(url);
+            let index = saito.addNewSocket(socket);
+            saito.getInstance().process_new_peer(index, peer_data);
+            console.log("connected to : " + url + " with peer index : " + index);
+        } catch (e) {
+            console.error(e);
+        }
     },
     write_value: (key: string, value: Uint8Array) => {
     },

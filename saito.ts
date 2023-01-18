@@ -7,6 +7,10 @@ export default class Saito {
         console.log("construct...");
     }
 
+    public getInstance(): any {
+        return Saito.instance;
+    }
+
     async initialize() {
         console.log("initializing saito")
         if (typeof window === "undefined") {
