@@ -4,6 +4,8 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const ws = require("ws");
 const fetch = require("node-fetch");
+const fs = require("fs");
+const process = require("process");
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -84,17 +86,52 @@ global.shared_methods = {
         }
     },
     write_value: (key: string, value: Uint8Array) => {
+        try {
+            fs.writeFileSync(key, value);
+        } catch (error) {
+            console.error(error);
+        }
     },
     read_value: (key: string) => {
+        try {
+            let data = fs.readFileSync(key);
+            return data;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
     },
     load_block_file_list: () => {
-        return [];
+        try {
+            let files = fs.readdirSync("data/blocks/");
+            files = files.filter((file: string) => file.endsWith(".sai"));
+            return files;
+
+        } catch (e) {
+            console.log("cwd : ", process.cwd())
+            console.error(e);
+            return [];
+        }
     },
     is_existing_file: (key: string) => {
+        try {
+            let result = fs.statSync(key);
+            return !!result;
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
     },
     remove_value: (key: string) => {
+        try {
+            fs.rmSync(key);
+        } catch (e) {
+            console.error(e);
+        }
     },
     disconnect_from_peer: (peer_index: bigint) => {
+        let socket: any = saito.removeSocket(peer_index);
+        socket.close();
     },
     fetch_block_from_peer: (hash: Uint8Array, peer_index: bigint, url: string) => {
         fetch(url)
