@@ -13,6 +13,9 @@ const usersRouter = require('./routes/users');
 import Saito from './saito';
 // const Saito = require("./saito").default;
 
+let cr = require('crypto');
+globalThis.crypto = cr.webcrypto;
+
 const appNode = express();
 
 appNode.use(logger('dev'));
@@ -27,9 +30,17 @@ appNode.use('/users', usersRouter);
 
 let saito = new Saito();
 
-saito.initialize().then(() => {
-
-});
+import("saito-wasm/dist/server")
+    .then((s: any) => {
+        return s.default;
+    })
+    .then((s) => {
+        Saito.instance = s;
+        return saito.initialize();
+    });
+// saito.initialize().then(() => {
+//
+// });
 
 function startServer() {
     const server = new ws.Server({
@@ -42,8 +53,14 @@ function startServer() {
             server.emit("connection", websocket, request);
         });
     });
-    server.on("connection", (wsocket: any, request: any) => {
-        let index = saito.addNewSocket(wsocket);
+    server.on("connection", (socket: any, request: any) => {
+        let index = saito.addNewSocket(socket);
+        socket.on("message", (buffer: any) => {
+            saito.getInstance().process_msg_buffer_from_peer(buffer, index);
+        });
+        socket.on("close", () => {
+            saito.getInstance().process_peer_disconnection(index);
+        });
         saito.getInstance().process_new_peer(index, null);
     });
 
@@ -78,7 +95,9 @@ global.shared_methods = {
             socket.on("message", (buffer: any) => {
                 saito.getInstance().process_msg_buffer_from_peer(buffer, index);
             });
-
+            socket.on("close", () => {
+                saito.getInstance().process_peer_disconnection(index);
+            });
             saito.getInstance().process_new_peer(index, peer_data);
             console.log("connected to : " + url + " with peer index : " + index);
         } catch (e) {
@@ -130,8 +149,7 @@ global.shared_methods = {
         }
     },
     disconnect_from_peer: (peer_index: bigint) => {
-        let socket: any = saito.removeSocket(peer_index);
-        socket.close();
+        saito.removeSocket(peer_index);
     },
     fetch_block_from_peer: (hash: Uint8Array, peer_index: bigint, url: string) => {
         fetch(url)

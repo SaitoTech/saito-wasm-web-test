@@ -88,7 +88,11 @@ let config = {
             {
                 test: /\.tsx?$/,
                 loader: "ts-loader",
-                exclude: /(node_modules)/
+                exclude: ["/node_modules/", /\.d\.ts$/iu]
+            },
+            {
+                test: /\.d\.ts$/,
+                loader: 'ignore-loader'
             },
             // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
             {
@@ -186,8 +190,17 @@ let nodeConfigs = merge(config, {
         path: path.resolve(__dirname, "./dist/server"),
         filename: outputfile
     },
+    resolve: {
+        fallback: {}
+    },
     target: "node",
     entry: ["babel-polyfill", path.resolve(__dirname, "./app.node.ts")],
+    externals: [
+        {
+            'utf-8-validate': 'commonjs utf-8-validate',
+            'bufferutil': 'commonjs bufferutil',
+        },
+    ],
 });
 let webConfigs = merge(config, {
     output: {
@@ -195,15 +208,22 @@ let webConfigs = merge(config, {
         filename: outputfile
     },
     plugins: [
-        // new CopyPlugin({
-        //     patterns: [{
-        //         from: "./dist/browser/saito.js",
-        //         to: "../../public/javascripts/saito.js",
-        //     }]
-        // })
+        new CopyPlugin({
+            patterns: [{
+                from: "./dist/browser/saito.js",
+                to: "../../public/javascripts/saito.js",
+            }]
+        })
     ],
+    resolve: {
+        fallback: {
+            "bufferutil": false,
+            "utf-8-validate": false
+        }
+    },
     target: "web",
     entry: ["babel-polyfill", path.resolve(__dirname, "./app.web.ts")],
 });
 
 module.exports = [nodeConfigs, webConfigs];
+// module.exports = [nodeConfigs];

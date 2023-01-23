@@ -13,22 +13,16 @@ export default class Saito {
 
     async initialize() {
         console.log("initializing saito")
-        if (typeof window === "undefined") {
-
-            let cr = await import ('node:crypto');
-            // @ts-ignore
-            globalThis.crypto = cr.webcrypto;
-
-            let instance = await import("saito-wasm/dist/server");
-            let inst2 = await instance.default;
-            // console.log("saito : ", inst2);
-            // await inst2.initSync("aaa");
-            Saito.instance = inst2;
-        } else {
-            let instance = await import("saito-wasm/dist/browser");
-            let inst2 = await instance.default;
-            Saito.instance = inst2;
-        }
+        // if (typeof window === "undefined") {
+        //     let instance = await import("saito-wasm/dist/server");
+        //     let inst2 = await instance.default;
+        //     Saito.instance = inst2;
+        // } else {
+        //     let instance = await import("saito-wasm/dist/browser");
+        //     let inst2 = await instance.default;
+        //     console.log("inst2 : ", inst2);
+        //     Saito.instance = inst2;
+        // }
         let configs = {
             "server": {
                 "host": "127.0.0.1",
@@ -73,7 +67,9 @@ export default class Saito {
     }
 
     public removeSocket(index: bigint) {
+        let socket = this.sockets.get(index);
         this.sockets.delete(index);
+        socket.close();
     }
 
 }
