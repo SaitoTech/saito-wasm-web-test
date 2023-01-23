@@ -204,16 +204,17 @@ let nodeConfigs = merge(config, {
 });
 let webConfigs = merge(config, {
     output: {
-        path: path.resolve(__dirname, "./dist/browser"),
+        // path: path.resolve(__dirname, "./dist/browser"),
+        path: path.resolve(__dirname, "./public/javascripts/"),
         filename: outputfile
     },
     plugins: [
-        new CopyPlugin({
-            patterns: [{
-                from: "./dist/browser/saito.js",
-                to: "../../public/javascripts/saito.js",
-            }]
-        })
+        // new CopyPlugin({
+        //     patterns: [{
+        //         from: "./dist/browser/saito.js",
+        //         to: "../../public/javascripts/saito.js",
+        //     }]
+        // })
     ],
     resolve: {
         fallback: {

@@ -18,7 +18,32 @@ import("saito-wasm/dist/browser")
     .then((s) => {
         console.log("saito 2 : ", s);
         Saito.instance = s;
-        return saito.initialize();
+        let configs = {
+            "server": {
+                "host": "127.0.0.1",
+                "port": 3000,
+                "protocol": "http",
+                "endpoint": {
+                    "host": "127.0.0.1",
+                    "port": 3000,
+                    "protocol": "http"
+                },
+                "verification_threads": 1,
+                "channel_size": 10000,
+                "stat_timer_in_ms": 5000,
+                "thread_sleep_time_in_ms": 10,
+                "block_fetch_batch_size": 10
+            },
+            "peers": [
+                {
+                    "host": "127.0.0.1",
+                    "port": 13201,
+                    "protocol": "http",
+                    "synctype": "full"
+                }
+            ]
+        };
+        return saito.initialize(configs);
     })
     .then(() => {
         console.log("test1");
@@ -126,11 +151,15 @@ global.shared_methods = {
         saito.removeSocket(peer_index);
     },
     fetch_block_from_peer: (hash: Uint8Array, peer_index: bigint, url: string) => {
-        fetch(url)
+        fetch(url, {
+            mode: "no-cors"
+        })
             .then((res: any) => {
+                console.log("block res : ", res);
                 return res.arrayBuffer();
             })
             .then((buffer: ArrayBuffer) => {
+                console.log("block buffer : ", buffer);
                 return new Uint8Array(buffer);
             }).then((buffer: Uint8Array) => {
             saito.getInstance().process_fetched_block(buffer, hash, peer_index);

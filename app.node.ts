@@ -1,11 +1,15 @@
+import {parse} from "url";
+
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const ws = require("ws");
 const fetch = require("node-fetch");
 const fs = require("fs");
 const process = require("process");
+const cors = require("cors");
+
+import {WebSocketServer, WebSocket} from 'ws';
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -18,6 +22,7 @@ globalThis.crypto = cr.webcrypto;
 
 const appNode = express();
 
+appNode.use(cors());
 appNode.use(logger('dev'));
 appNode.use(express.json());
 appNode.use(express.urlencoded({extended: false}));
@@ -36,24 +41,57 @@ import("saito-wasm/dist/server")
     })
     .then((s) => {
         Saito.instance = s;
-        return saito.initialize();
+        let configs = {
+            "server": {
+                "host": "127.0.0.1",
+                "port": 13201,
+                "protocol": "http",
+                "endpoint": {
+                    "host": "127.0.0.1",
+                    "port": 13201,
+                    "protocol": "http"
+                },
+                "verification_threads": 1,
+                "channel_size": 10000,
+                "stat_timer_in_ms": 5000,
+                "thread_sleep_time_in_ms": 10,
+                "block_fetch_batch_size": 10
+            },
+            "peers": [
+                {
+                    "host": "127.0.0.1",
+                    "port": 12201,
+                    "protocol": "http",
+                    "synctype": "full"
+                }
+            ]
+        };
+        return saito.initialize(configs);
     });
 // saito.initialize().then(() => {
 //
 // });
 
-function startServer() {
-    const server = new ws.Server({
+function startServer(server: any) {
+    const wss = new WebSocketServer({
+        // server: appNode,
         noServer: true,
-        path: "/wsopen"
+        // path: "wsopen"
     });
 
-    appNode.on("upgrade", (request: any, socket: any, head: any) => {
-        server.handleUpgrade(request, socket, head, (websocket: any) => {
-            server.emit("connection", websocket, request);
-        });
+    server.on("upgrade", (request: any, socket: any, head: any) => {
+        console.log(" ----> " + request.url);
+        const {pathname} = parse(request.url);
+        if (pathname === "/wsopen") {
+            wss.handleUpgrade(request, socket, head, (websocket: any) => {
+                wss.emit("connection", websocket, request);
+            });
+        } else {
+            socket.destroy();
+        }
+
     });
-    server.on("connection", (socket: any, request: any) => {
+    wss.on("connection", (socket: any, request: any) => {
         let index = saito.addNewSocket(socket);
         socket.on("message", (buffer: any) => {
             saito.getInstance().process_msg_buffer_from_peer(buffer, index);
@@ -89,7 +127,7 @@ global.shared_methods = {
 
         try {
             console.log("connecting to " + url + "....");
-            let socket = new ws.WebSocket(url);
+            let socket = new WebSocket(url);
             let index = saito.addNewSocket(socket);
 
             socket.on("message", (buffer: any) => {
@@ -164,6 +202,7 @@ global.shared_methods = {
     }
 };
 
-startServer();
+// startServer();
 
-module.exports = appNode;
+// module.exports = appNode;
+export default {appNode, startServer};
