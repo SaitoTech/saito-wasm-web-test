@@ -13,6 +13,7 @@ import {WebSocketServer, WebSocket} from 'ws';
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
+const blockRouter = require("./routes/block.js");
 
 import Saito from './saito';
 // const Saito = require("./saito").default;
@@ -31,6 +32,7 @@ appNode.use(express.static(path.join(__dirname, 'public')));
 
 appNode.use('/', indexRouter);
 appNode.use('/users', usersRouter);
+appNode.use("/block/", blockRouter);
 
 
 let saito = new Saito();
@@ -60,7 +62,7 @@ import("saito-wasm/dist/server")
             "peers": [
                 {
                     "host": "127.0.0.1",
-                    "port": 12201,
+                    "port": 12101,
                     "protocol": "http",
                     "synctype": "full"
                 }

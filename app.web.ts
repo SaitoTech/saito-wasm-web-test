@@ -46,12 +46,8 @@ import("saito-wasm/dist/browser")
         return saito.initialize(configs);
     })
     .then(() => {
-        console.log("test1");
         return saito.getInstance().get_latest_block_hash();
-    })
-    .then(() => {
-        console.log("test2");
-    })
+    });
 
 // @ts-ignore
 global.shared_methods = {
@@ -151,15 +147,19 @@ global.shared_methods = {
         saito.removeSocket(peer_index);
     },
     fetch_block_from_peer: (hash: Uint8Array, peer_index: bigint, url: string) => {
-        fetch(url, {
-            mode: "no-cors"
-        })
+        console.log("fetching block : " + url);
+        fetch(url)
             .then((res: any) => {
                 console.log("block res : ", res);
                 return res.arrayBuffer();
             })
+            // .then((a: any) => {
+            //     console.log("a", a);
+            //     return a;
+            // })
             .then((buffer: ArrayBuffer) => {
                 console.log("block buffer : ", buffer);
+                console.log("buffer length : " + buffer.byteLength);
                 return new Uint8Array(buffer);
             }).then((buffer: Uint8Array) => {
             saito.getInstance().process_fetched_block(buffer, hash, peer_index);
