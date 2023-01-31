@@ -182,7 +182,6 @@ let config = {
     },
     mode: "development",
     devtool: "eval"
-
 };
 
 let nodeConfigs = merge(config, {
