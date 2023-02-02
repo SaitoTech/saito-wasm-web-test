@@ -61,7 +61,6 @@ let configs = {
 };
 
 function startServer(server: any) {
-
     const wss = new WebSocketServer({
         // server: appNode,
         noServer: true,
