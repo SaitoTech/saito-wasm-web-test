@@ -30,20 +30,3 @@ initSaito(configs, new WebSharedMethods())
     .then(() => {
         console.log("yyyyyyyyyyy");
     })
-// import("saito-wasm/dist/browser")
-//     .then((s: any) => {
-//         console.log("saito 1 : ", s);
-//         return s.default;
-//     })
-//     .then((s) => {
-//         console.log("saito 2 : ", s);
-//         Saito.instance = s;
-//
-//         return saito.initialize(configs);
-//     })
-//     .then(() => {
-//         return saito.getInstance().get_latest_block_hash();
-//     });
-
-
-// module.exports = saito;

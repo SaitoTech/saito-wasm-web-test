@@ -9,7 +9,7 @@ let entrypoint = "./app.ts";
 let outputfile = "saito.js";
 if (process.argv.includes("dev")) {
     console.log("dev mode source map used");
-    devtool = "eval";
+    devtool = "eval-source-map";
 }
 
 let config = {
@@ -181,7 +181,8 @@ let config = {
         // futureDefaults: true,
     },
     mode: "development",
-    devtool: "eval"
+    devtool: 'eval'
+
 };
 
 let nodeConfigs = merge(config, {

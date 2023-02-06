@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "ts-node ./bin/www"
+    "start": "ts-node ./bin/www",
+    "build": "webpack"
   },
   "dependencies": {
     "buffer": "^6.0.3",
